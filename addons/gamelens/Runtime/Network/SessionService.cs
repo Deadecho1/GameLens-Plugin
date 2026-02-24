@@ -10,12 +10,13 @@ namespace GameLensAnalytics.Runtime
     public sealed class SessionService
     {
         private readonly System.Net.Http.HttpClient _http = new System.Net.Http.HttpClient();
+        private readonly string endpointSession = "/api/v1/collect/session";
 
         // create a new session on the server, returning the session id
         public async Task<string> CreateSessionAsync(string endpointBase, string gameId)
         {
             // POST {game_id, started_at}
-            var url = $"{endpointBase.TrimEnd('/')}/collect/session";
+            var url = $"{endpointBase.TrimEnd('/')}{endpointSession}";
 
             var body = new
             {

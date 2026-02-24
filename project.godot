@@ -15,10 +15,6 @@ run/main_scene="uid://icp56mj3s2k7"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
-[autoload]
-
-GameLens="*res://addons/gamelens/Runtime/GameLensApi.gd"
-
 [dotnet]
 
 project/assembly_name="GameLens"

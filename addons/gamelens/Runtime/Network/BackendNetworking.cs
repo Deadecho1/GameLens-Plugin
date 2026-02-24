@@ -13,6 +13,8 @@ namespace GameLensAnalytics.Runtime
         public string SessionId { get; private set; } = null;
         public bool BackendReady => _backendReady;
 
+        public SocketCaptureClient Socket => _socket;
+        
         private volatile bool _backendReady = false;
 
         private readonly SocketCaptureClient _socket = new();
@@ -155,8 +157,5 @@ namespace GameLensAnalytics.Runtime
             var timer = GetTree().CreateTimer(ms / 1000.0);
             await ToSignal(timer, SceneTreeTimer.SignalName.Timeout);
         }
-
-        // Optional: expose socket so uploader can emit capture_event later
-        public SocketCaptureClient Socket => _socket;
     }
 }

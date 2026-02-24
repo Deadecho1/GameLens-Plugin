@@ -15,11 +15,8 @@ namespace GameLensAnalytics.Runtime
         Manual,
     }
     
-    
-    /// <summary>
     /// GameLens main runtime entry point. This singleton gets loaded immediately by the GameLensApi autoload on game start.
     /// Owns config + state, exposes a small public API, and coordinates capture workers.
-    /// </summary>
     public partial class GameLensOrchestrator : Node
     {
         // -------------------------
@@ -105,12 +102,14 @@ namespace GameLensAnalytics.Runtime
             Directory.CreateDirectory(rootGlobal);
 
             _uploader = new UploadQueueWorker();
+            _uploader.InitAndScan(rootGlobal);
+
             _store = new LocalCaptureStore(rootGlobal);
 
             // When storage finishes writing a capture -> enqueue for upload
-            _store.CaptureSaved += (imgPath, jsonPath, captureId) =>
+            _store.CaptureSaved += (sessionId, imgPath, jsonPath, metaPath, captureId) =>
             {
-                _uploader.Enqueue(imgPath, jsonPath, captureId);
+                _uploader.Enqueue(sessionId, imgPath, jsonPath, metaPath, captureId);
             };
 
             _net = new BackendNetworking
@@ -165,7 +164,7 @@ namespace GameLensAnalytics.Runtime
 
             _snapFinalized = true;
             var pkt = _capturer.Capture(_pendingReasons, _pendingUtcUnixSeconds);
-            _store.Enqueue(pkt);
+            _store.Enqueue(SessionId, pkt);
             // reset snap state for next frame
             ConsumeSnap();
         }
