@@ -74,11 +74,6 @@ namespace GameLensAnalytics.Runtime
             _ = NetworkingLoopAsync();
         }
 
-        public void Stop()
-        {
-            _backendReady = false;
-        }
-
         private bool IsEnabled()
         {
             try { return IsEnabledFunc?.Invoke() ?? true; }
@@ -124,6 +119,7 @@ namespace GameLensAnalytics.Runtime
                         if (!_backendReady)
                             GD.Print("[GameLens] Backend ready. Upload worker enabled.");
 
+                        _connectAttempt = 0;
                         _backendReady = true;
                     }
 
@@ -138,7 +134,7 @@ namespace GameLensAnalytics.Runtime
                     _backendReady = false;
                     GD.PrintErr($"[GameLens] Networking loop error: {e.Message}");
                 }
-
+                // socket was disconnected but plugin is still enabled: retry with backoff.
                 if (IsEnabled())
                 {
                     int delay = Math.Min(maxDelayMs, baseDelayMs * (1 << Math.Min(_connectAttempt, 5)));
